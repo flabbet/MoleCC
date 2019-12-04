@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MoleCC.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -20,6 +21,21 @@ namespace MoleCC.Views
         public VideoPlayerWindow()
         {
             InitializeComponent();
+            VideoPlayerViewModel context = new VideoPlayerViewModel();
+            DataContext = context;
+
+            context.PlayRequested += (sender, e) =>
+            {
+                if (e.PauseVideo)
+                {
+                    Player.Pause();
+                }
+                else
+                {
+                    Player.Play();
+                }
+            };
+            
         }
     }
 }

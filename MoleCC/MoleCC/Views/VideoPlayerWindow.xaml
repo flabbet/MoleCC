@@ -5,12 +5,24 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:MoleCC.ViewModels"
         xmlns:local="clr-namespace:MoleCC.Views"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         mc:Ignorable="d"
-        Title="VideoPlayerWindow" Background="#343434" Height="450" WindowState="Maximized" Width="800" DataContext="{DynamicResource VideoPlayerViewModel}">
-    <Window.Resources>
-        <vm:VideoPlayerViewModel x:Key="VideoPlayerViewModel"/>
-    </Window.Resources>
+        Title="VideoPlayerWindow" Background="#343434" Height="450" WindowState="Maximized" Width="800">
     <Grid>
-        <MediaElement Source="{Binding CurrentVideoPath}"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="407*"/>
+            <RowDefinition Height="27*"/>
+        </Grid.RowDefinitions>
+        <MediaElement Name="Player" Source="{Binding CurrentVideoPath}" UnloadedBehavior="Stop" LoadedBehavior="Manual" Grid.Row="0">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseLeftButtonDown">
+                    <i:InvokeCommandAction Command="{Binding PlayOrStopVideoCommand}"/>
+                </i:EventTrigger>
+                <i:EventTrigger EventName="Loaded">
+                    <i:InvokeCommandAction Command="{Binding PlayVideoCommand}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </MediaElement>
+        <Button Command="{Binding PlayOrStopVideoCommand}" Grid.Row="1">></Button>
     </Grid>
 </Window>
