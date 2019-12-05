@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Threading;
 
 namespace MoleCC.ViewModels
@@ -59,15 +60,18 @@ namespace MoleCC.ViewModels
 
         private List<SubtitleItem> _parsedSubtitles;
         private List<Dictionary<string, string>> _parsedTranslation;
+        private int _currentTranslationIndex;
 
         public RelayCommand PlayOrStopVideoCommand { get; set; }
         public RelayCommand PlayVideoCommand { get; set; }
+        public RelayCommand TranslateSubtitleCommand { get; set; }
 
 
         public VideoPlayerViewModel()
         {
             PlayOrStopVideoCommand = new RelayCommand(PlayOrStopVideo);
             PlayVideoCommand = new RelayCommand(PlayVideo);
+            TranslateSubtitleCommand = new RelayCommand(ShowTranslation);
             Subtitles = new ObservableCollection<Subtitle>();
             DispatcherTimer timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
@@ -89,10 +93,10 @@ namespace MoleCC.ViewModels
 
         private void Timer_Tick(object sender, EventArgs e)
         {
-            GenerateSubitles();
+            GenerateSubtitles();
         }
 
-        private void GenerateSubitles()
+        private void GenerateSubtitles()
         {
             if (_parsedSubtitles != null)
             {
@@ -101,6 +105,7 @@ namespace MoleCC.ViewModels
                 SubtitleItem item = _parsedSubtitles[itemIndex];
                 Dictionary<string, string> translations = _parsedTranslation[itemIndex];
                 Subtitles.Clear();
+                _currentTranslationIndex = itemIndex;
                 for (int i = 0; i < translations.Count; i++)
                 {
                     var translation = translations.ElementAt(i);
@@ -111,7 +116,10 @@ namespace MoleCC.ViewModels
 
         public void ShowTranslation(object parameter)
         {
-            TranslationForSelectedWord = (string)parameter;
+            if (Mouse.DirectlyOver.GetType() == typeof(TextBlock))
+            {
+                TranslationForSelectedWord = _parsedTranslation.ElementAt(_currentTranslationIndex).GetValueOrDefault(((TextBlock)Mouse.DirectlyOver).Text);
+            }
         }
 
         public void PlayVideo(object parameter)
