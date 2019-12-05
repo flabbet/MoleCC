@@ -1,9 +1,11 @@
 ﻿using MoleCC.Events;
 using MoleCC.Helpers;
 using MoleCC.Models;
+using SubtitlesParser.Classes;
+using SubtitlesParser.Classes.Parsers;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.IO;
 
 namespace MoleCC.ViewModels
 {
@@ -22,6 +24,17 @@ namespace MoleCC.ViewModels
             }
         }
 
+        private string _currentSubtitles;
+        public string CurrentSubtitles
+        {
+            get => _currentSubtitles;
+            set
+            {
+                _currentSubtitles = value;
+                RaisePropertyChanged("CurrentSubtitles");
+            }
+        }
+
         private double _volume = 100;
         public double Volume
         {
@@ -35,6 +48,8 @@ namespace MoleCC.ViewModels
 
         public bool IsVideoPlaying { get; private set; } = false;
 
+        private List<SubtitleItem> _parsedSubtitles;
+
         public RelayCommand PlayOrStopVideoCommand { get; set; }
         public RelayCommand PlayVideoCommand { get; set; }
 
@@ -43,6 +58,7 @@ namespace MoleCC.ViewModels
         {
             PlayOrStopVideoCommand = new RelayCommand(PlayOrStopVideo);
             PlayVideoCommand = new RelayCommand(PlayVideo);
+            _parsedSubtitles = ParseSubtitles(CurrentVideo.PathToSubtitles);
         }
 
         public void PlayVideo(object parameter)
@@ -54,6 +70,15 @@ namespace MoleCC.ViewModels
         {
             IsVideoPlaying = !IsVideoPlaying;
             PlayRequested?.Invoke(this, new PlayVideoRequestEventArgs() { PauseVideo = IsVideoPlaying });
+        }
+
+        public List<SubtitleItem> ParseSubtitles(string pathToFile)
+        {
+            var parser = new SubParser();
+            using (var fileStream = File.OpenRead(pathToFile))
+            {
+                return parser.ParseStream(fileStream);
+            }
         }
     }
 }

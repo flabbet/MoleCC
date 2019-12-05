@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MoleCC.Models
 {
-    public class Video
+    public struct Video
     {
         public string PathToVideo { get; set; }
         public string PathToSubtitles { get; set; }
