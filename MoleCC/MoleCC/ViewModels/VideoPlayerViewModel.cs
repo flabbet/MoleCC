@@ -1,5 +1,6 @@
 ﻿using MoleCC.Events;
 using MoleCC.Helpers;
+using MoleCC.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,14 +11,25 @@ namespace MoleCC.ViewModels
     {
         public event EventHandler<PlayVideoRequestEventArgs> PlayRequested;
 
-        private string _currentVideoPath;
-        public string CurrentVideoPath 
+        private Video _currentVideo;
+        public Video CurrentVideo 
         {
-            get => _currentVideoPath;
+            get => _currentVideo;
             set
             {
-                _currentVideoPath = value;
-                RaisePropertyChanged("CurrentVideoPath");
+                _currentVideo = value;
+                RaisePropertyChanged("CurrentVideo");
+            }
+        }
+
+        private double _volume = 100;
+        public double Volume
+        {
+            get => _volume;
+            set
+            {
+                _volume = value;
+                RaisePropertyChanged("Volume");
             }
         }
 

@@ -10,10 +10,11 @@
         Title="VideoPlayerWindow" Background="#343434" Height="450" WindowState="Maximized" Width="800">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="407*"/>
-            <RowDefinition Height="27*"/>
+            <RowDefinition Height="347*"/>
+            <RowDefinition Height="60*"/>
+            <RowDefinition Height="27"/>
         </Grid.RowDefinitions>
-        <MediaElement Name="Player" Source="{Binding CurrentVideoPath}" UnloadedBehavior="Stop" LoadedBehavior="Manual" Grid.Row="0">
+        <MediaElement Name="Player" Volume="{Binding Volume}" Source="{Binding CurrentVideo.PathToVideo}" UnloadedBehavior="Stop" LoadedBehavior="Manual" Grid.Row="0" Grid.RowSpan="2">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseLeftButtonDown">
                     <i:InvokeCommandAction Command="{Binding PlayOrStopVideoCommand}"/>
@@ -23,6 +24,10 @@
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </MediaElement>
-        <Button Command="{Binding PlayOrStopVideoCommand}" Grid.Row="1">></Button>
+        <TextBlock Grid.Row="1" VerticalAlignment="Center" FontSize="20" HorizontalAlignment="Center" Text="adsasdassad" Background="Transparent"/>
+        <StackPanel Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Center">
+            <Button Command="{Binding PlayOrStopVideoCommand}" Width="30" Grid.Row="1">►</Button>
+            <Slider Minimum="0" Maximum="1" Margin="10,0,0,0" Width="100" VerticalAlignment="Center" Value="{Binding Volume, Mode=TwoWay}"/>
+        </StackPanel>
     </Grid>
 </Window>
