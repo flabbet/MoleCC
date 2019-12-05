@@ -8,6 +8,10 @@ namespace MoleCC.ViewModels
 {
     class AddVideoViewModel : ViewModelBase
     {
+        const string SubtitlesFilter = "Subtitles (*.srt)|*.srt|All files (*.*)|*.*";
+        const string TranslationDictionaryFilter = "Translation Dictionary (*.trd)|*.trd|All files (*.*)|*.*";
+        const string VideoFilter = "Video files (*.mp4)|*.mp4|All files (*.*)|*.*";
+
         public RelayCommand OpenVideoPathBrowserCommand { get; set; }
         public RelayCommand OpenSubtitlesPathBrowserCommand { get; set; }
         public RelayCommand SaveVideoCommand { get; set; }
@@ -54,20 +58,21 @@ namespace MoleCC.ViewModels
 
         private void OpenSubtitlesBrowser(object parameter)
         {
-            string subtitlesPath = OpenSubtitlesDialog();
             if((string)parameter == "subtitles"){
+                string subtitlesPath = OpenFileDialog(SubtitlesFilter);
                 SubtitlesPath = subtitlesPath;
             }
             else if((string)parameter == "translated subtitles")
             {
+                string subtitlesPath = OpenFileDialog(TranslationDictionaryFilter);
                 TranslatedSubtitlesPath = subtitlesPath;
             }
         }
 
-        private string OpenSubtitlesDialog()
+        private string OpenFileDialog(string filter)
         {
             OpenFileDialog dialog = new OpenFileDialog();
-            dialog.Filter = "Subtitles (*.srt)|*.srt|All files (*.*)|*.*";
+            dialog.Filter = filter;
             if (dialog.ShowDialog() == true)
             {
                 return dialog.FileName;
@@ -77,27 +82,16 @@ namespace MoleCC.ViewModels
 
         public void SaveVideo(object parameter)
         {
-            //TODO: Save in database
             VideoPlayerWindow videoPlayer = new VideoPlayerWindow();
             ((VideoPlayerViewModel)videoPlayer.DataContext).CurrentVideo = new Video(VideoPath, SubtitlesPath, TranslatedSubtitlesPath);
+            ((VideoPlayerViewModel)videoPlayer.DataContext).ParseCurrentVideoSubtitles();
             videoPlayer.Show();
             CloseAction();
         }
 
         public void OpenPathBrowser(object parameter)
         {            
-            VideoPath = OpenFileDialog();
-        }
-
-        private string OpenFileDialog()
-        {
-            OpenFileDialog dialog = new OpenFileDialog();
-            dialog.Filter = "Video files (*.mp4)|*.mp4|All files (*.*)|*.*";
-            if (dialog.ShowDialog() == true)
-            {
-                return dialog.FileName;
-            }
-            return "";
+            VideoPath = OpenFileDialog(VideoFilter);
         }
     }
 }

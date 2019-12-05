@@ -24,7 +24,19 @@
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </MediaElement>
-        <TextBlock Grid.Row="1" VerticalAlignment="Center" FontSize="20" HorizontalAlignment="Center" Text="adsasdassad" Background="Transparent"/>
+        <ItemsControl  ItemsSource="{Binding Subtitles}" Grid.Row="1">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Background="#000" Text="{Binding OriginalSubitile}" Margin="5,0,0,5" FontSize="18"/>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
         <StackPanel Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Center">
             <Button Command="{Binding PlayOrStopVideoCommand}" Width="30" Grid.Row="1">►</Button>
             <Slider Minimum="0" Maximum="1" Margin="10,0,0,0" Width="100" VerticalAlignment="Center" Value="{Binding Volume, Mode=TwoWay}"/>

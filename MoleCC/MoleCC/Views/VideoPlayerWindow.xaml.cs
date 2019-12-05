@@ -23,6 +23,8 @@ namespace MoleCC.Views
             InitializeComponent();
             VideoPlayerViewModel context = new VideoPlayerViewModel();
             DataContext = context;
+            context.player = Player;
+
 
             context.PlayRequested += (sender, e) =>
             {
