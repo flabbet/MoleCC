@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:MoleCC.Views"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         mc:Ignorable="d"
-        Title="VideoPlayerWindow" Background="#343434" Height="450" WindowState="Maximized" Width="800">
+        Title="VideoPlayerWindow" x:Name="playerWindow" Background="#343434" Height="450" WindowState="Maximized" Width="800">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="MouseMove">
             <i:InvokeCommandAction Command="{Binding TranslateSubtitleCommand}"/>
@@ -19,6 +19,11 @@
             <RowDefinition Height="60*"/>
             <RowDefinition Height="27"/>
         </Grid.RowDefinitions>
+        <Popup Name="translationPopup" IsOpen="{Binding ShowPopup}" Placement="Relative" HorizontalOffset="{Binding PopupHorizontalOffset}" VerticalOffset="{Binding PopupVerticalOffset}" PlacementTarget="{Binding ElementName=playerWindow}">
+            <Border BorderBrush="DimGray" BorderThickness="1">
+                <TextBlock Background="#242424" Padding="5" FontSize="18" TextWrapping="Wrap" Text="{Binding TranslationForSelectedWord}"/>
+            </Border>
+        </Popup>
         <MediaElement Name="Player" Volume="{Binding Volume}" Source="{Binding CurrentVideo.PathToVideo}" UnloadedBehavior="Stop" LoadedBehavior="Manual" Grid.Row="0" Grid.RowSpan="2">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseLeftButtonDown">
@@ -29,7 +34,7 @@
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </MediaElement>
-        <ItemsControl  ItemsSource="{Binding Subtitles}" Grid.Row="1">
+        <ItemsControl ItemsSource="{Binding Subtitles}" Grid.Row="1">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"/>
@@ -37,15 +42,25 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Background="#000" Text="{Binding OriginalSubitile}" Margin="5,0,0,5" FontSize="18"/>
+                    <TextBlock Background="#000" Text="{Binding OriginalSubitile}" Height="40" Padding="5" Margin="5,0,0,5" FontSize="24"/>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
 
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="100"/>
+            </Grid.ColumnDefinitions>
+            <Slider IsMoveToPointEnabled="True" Margin="18,0,100,0" Minimum="0" Maximum="1" VerticalAlignment="Bottom" Value="{Binding VideoPosition, Mode=TwoWay}" Grid.Column="1"/>
+            <TextBlock Text="{Binding VideoTime}"  HorizontalAlignment="Right" VerticalAlignment="Bottom" Grid.Column="2"/>
+        </Grid>
+
         <StackPanel Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Center">
-            <Button Command="{Binding PlayOrStopVideoCommand}" Width="30" Grid.Row="1">►</Button>
+            <Button Command="{Binding PlayOrStopVideoCommand}" Width="30" Grid.Row="1">❚❚ ►</Button>
             <Slider Minimum="0" Maximum="1" Margin="10,0,0,0" Width="100" VerticalAlignment="Center" Value="{Binding Volume, Mode=TwoWay}"/>
-            <TextBlock Text="{Binding TranslationForSelectedWord}"/>
+            <TextBlock VerticalAlignment="Center" Text="Volume"/>
         </StackPanel>
     </Grid>
 </Window>

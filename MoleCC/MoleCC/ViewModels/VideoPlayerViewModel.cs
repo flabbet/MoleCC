@@ -19,7 +19,9 @@ namespace MoleCC.ViewModels
     class VideoPlayerViewModel : ViewModelBase
     {
         public event EventHandler<PlayVideoRequestEventArgs> PlayRequested;
+        public event EventHandler<SetVideoPositionRequestEventArgs> RequestPosition;
         public MediaElement player; //I know this is violation of MVVM, but it is hard to work with MediaElement using MVVM
+        public Window window;
 
         private Video _currentVideo;
         public Video CurrentVideo
@@ -45,6 +47,17 @@ namespace MoleCC.ViewModels
             }
         }
 
+        private string _videoTime;
+        public string VideoTime
+        {
+            get => _videoTime;
+            set
+            {
+                _videoTime = value;
+                RaisePropertyChanged("VideoTime");
+            }
+        }
+
         private double _volume = 100;
         public double Volume
         {
@@ -53,6 +66,51 @@ namespace MoleCC.ViewModels
             {
                 _volume = value;
                 RaisePropertyChanged("Volume");
+            }
+        }
+
+        private double _videoPosition;
+        public double VideoPosition
+        {
+            get => _videoPosition;
+            set
+            {
+                _videoPosition = value;
+                RaisePropertyChanged("VideoPosition");
+                RequestPosition?.Invoke(this, new SetVideoPositionRequestEventArgs(new TimeSpan((long)(player.NaturalDuration.TimeSpan.Ticks * value))));
+            }
+        }
+
+        private bool _showPopup = false;
+        public bool ShowPopup
+        {
+            get => _showPopup;
+            set
+            {
+                _showPopup = value;
+                RaisePropertyChanged("ShowPopup");
+            }
+        }
+
+        private double _popupHoriozntalOffset;
+        public double PopupHorizontalOffset
+        {
+            get => _popupHoriozntalOffset;
+            set
+            {
+                _popupHoriozntalOffset = value;
+                RaisePropertyChanged("PopupHorizontalOffset");
+            }
+        }
+
+        private double _popupVerticallOffset;
+        public double PopupVerticalOffset
+        {
+            get => _popupVerticallOffset;
+            set
+            {
+                _popupVerticallOffset = value;
+                RaisePropertyChanged("PopupVerticalOffset");
             }
         }
 
@@ -94,6 +152,8 @@ namespace MoleCC.ViewModels
         private void Timer_Tick(object sender, EventArgs e)
         {
             GenerateSubtitles();
+            VideoPosition = (100 * player.Position.Ticks / (double)player.NaturalDuration.TimeSpan.Ticks) / 100;
+            VideoTime = $"{player.Position.ToString(@"mm\:ss")} \\ {player.NaturalDuration.TimeSpan.ToString(@"mm\:ss")}";
         }
 
         private void GenerateSubtitles()
@@ -101,7 +161,7 @@ namespace MoleCC.ViewModels
             if (_parsedSubtitles != null)
             {
                 int itemIndex = _parsedSubtitles.FindIndex(x => x.StartTime >= player.Position.TotalMilliseconds && x.EndTime > player.Position.TotalMilliseconds);
-                if (itemIndex > _parsedSubtitles.Count - 1 || itemIndex > _parsedTranslation.Count - 1) return;
+                if (itemIndex > _parsedSubtitles.Count - 1 || itemIndex > _parsedTranslation.Count - 1 || itemIndex < 0 ) return;
                 SubtitleItem item = _parsedSubtitles[itemIndex];
                 Dictionary<string, string> translations = _parsedTranslation[itemIndex];
                 Subtitles.Clear();
@@ -116,9 +176,17 @@ namespace MoleCC.ViewModels
 
         public void ShowTranslation(object parameter)
         {
-            if (Mouse.DirectlyOver.GetType() == typeof(TextBlock))
+            if (Mouse.DirectlyOver.GetType() == typeof(TextBlock) && ((TextBlock)Mouse.DirectlyOver).Name != "translationPopup")
             {
                 TranslationForSelectedWord = _parsedTranslation.ElementAt(_currentTranslationIndex).GetValueOrDefault(((TextBlock)Mouse.DirectlyOver).Text);
+                ShowPopup = true;
+                var mousePos = Mouse.GetPosition(window);
+                PopupVerticalOffset = mousePos.Y + 10;
+                PopupHorizontalOffset = mousePos.X + 10;
+            }
+            else
+            {
+                ShowPopup = false;
             }
         }
 
@@ -140,6 +208,11 @@ namespace MoleCC.ViewModels
             {
                 return parser.ParseStream(fileStream);
             }
+        }
+
+        public void SetVideoPosition(object parameter)
+        {
+
         }
 
         public List<Dictionary<string, string>> ParseTranslation(string pathToTrasnlation)
