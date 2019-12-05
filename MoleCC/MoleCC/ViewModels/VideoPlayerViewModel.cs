@@ -210,11 +210,6 @@ namespace MoleCC.ViewModels
             }
         }
 
-        public void SetVideoPosition(object parameter)
-        {
-
-        }
-
         public List<Dictionary<string, string>> ParseTranslation(string pathToTrasnlation)
         {
             var parser = new TrdTranslationParser();
